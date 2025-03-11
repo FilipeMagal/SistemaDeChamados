@@ -1,8 +1,8 @@
 package com.acadepol.controlechamado.controlechamado.service.impl;
 
 
-import com.acadepol.controlechamado.controlechamado.entity.Chamado;
-import com.acadepol.controlechamado.controlechamado.entity.Usuario;
+import com.acadepol.controlechamado.controlechamado.domain.chamado.Chamado;
+import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
 import com.acadepol.controlechamado.controlechamado.repository.ChamadoRepository;
 import com.acadepol.controlechamado.controlechamado.service.ChamadoService;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -35,10 +34,10 @@ public class ChamadoServiceImpl implements ChamadoService {
     //Metodo POST (Registrar dados)
 
     @Override
-    public void save(Usuario colaborador, String titulo, String descricao, Status status, Date dataCriacao) {
+    public void save(Usuario usuario, String titulo, String descricao, Status status, Date dataCriacao) {
         Chamado chamado = new Chamado();
 
-        chamado.setColaborador(colaborador);
+        chamado.setUsuario(usuario);
         chamado.setTitulo(titulo);
         chamado.setDescricao(descricao);
         chamado.setStatus(status);
@@ -54,7 +53,7 @@ public class ChamadoServiceImpl implements ChamadoService {
     }
 
 
-    public void save1(Long chamadoId,Usuario colaborador, String titulo, String descricao, Status status, Date dataConclusao) {
+    public void save1(Long chamadoId,Usuario usuario, String titulo, String descricao, Status status, Date dataConclusao) {
         Chamado chamado;
 
         if (chamadoId != null){
@@ -63,7 +62,7 @@ public class ChamadoServiceImpl implements ChamadoService {
             throw new RuntimeException("Chamado não encontrado com ID: null");
         }
 
-        chamado.setColaborador(colaborador);
+        chamado.setUsuario(usuario);
         chamado.setTitulo(titulo);
         chamado.setDescricao(descricao);
         chamado.setStatus(status);

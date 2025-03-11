@@ -1,13 +1,11 @@
-package com.acadepol.controlechamado.controlechamado.entity;
+package com.acadepol.controlechamado.controlechamado.domain.chamado;
 
+import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
-import javax.annotation.processing.Generated;
 import java.util.Date;
 
 @Getter
@@ -20,15 +18,15 @@ public class Chamado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chamadoId;
 
+    // Relacionamento com o usuário que criou o chamado (usuário solicitante)
     @ManyToOne
-    @JoinColumn(name = "colaborador_id")
-    private Usuario colaborador;
+    @JoinColumn(name = "usuario_id", referencedColumnName = "usuarioId")
+    private Usuario usuario;
 
     private String titulo;
 
     private String descricao;
 
-    //@Column(name = "status", columnDefinition = "ENUM('ABERTO', 'EM_ANDAMENTO', 'CONCLUIDO')")
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -38,7 +36,8 @@ public class Chamado {
     @Column(name = "data_conclusao")
     private Date dataConclusao;
 
+    // Relacionamento com o técnico responsável pelo chamado
     @ManyToOne
-    @JoinColumn(name = "tecnico_id")
+    @JoinColumn(name = "tecnico_id", referencedColumnName = "usuarioId")
     private Usuario tecnico;
 }

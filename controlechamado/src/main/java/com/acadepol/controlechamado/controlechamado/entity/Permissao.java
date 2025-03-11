@@ -1,6 +1,6 @@
 package com.acadepol.controlechamado.controlechamado.entity;
 
-import com.acadepol.controlechamado.controlechamado.enums.PermissaoTipo;
+import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

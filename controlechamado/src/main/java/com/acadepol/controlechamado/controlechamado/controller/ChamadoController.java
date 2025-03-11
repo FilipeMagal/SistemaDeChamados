@@ -1,8 +1,8 @@
 package com.acadepol.controlechamado.controlechamado.controller;
 
 import com.acadepol.controlechamado.controlechamado.DTO.ChamadoDTO;
-import com.acadepol.controlechamado.controlechamado.entity.Chamado;
-import com.acadepol.controlechamado.controlechamado.entity.Usuario;
+import com.acadepol.controlechamado.controlechamado.domain.chamado.Chamado;
+import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
 import com.acadepol.controlechamado.controlechamado.repository.UsuarioRepository;
 import com.acadepol.controlechamado.controlechamado.service.ChamadoService;
@@ -37,7 +37,7 @@ public class ChamadoController {
     @PostMapping("/registro")
     public ResponseEntity<String> registroChamado(@RequestBody ChamadoDTO chamadoDTO) {
         // Encontrar o colaborador e o técnico usando os IDs
-        Usuario colaborador = usuarioRepository.findById(chamadoDTO.getColaboradorId())
+        Usuario usuario = usuarioRepository.findById(chamadoDTO.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
 
         // Converter o código de status para o enum Status
@@ -45,14 +45,14 @@ public class ChamadoController {
 
         // Criar o chamado
         Chamado chamado = new Chamado();
-        chamado.setColaborador(colaborador);
+        chamado.setUsuario(usuario);
         chamado.setTitulo(chamadoDTO.getTitulo());
         chamado.setDescricao(chamadoDTO.getDescricao());
         chamado.setStatus(status);
         chamado.setDataCriacao(chamadoDTO.getDataCriacao());
 
 
-        chamadoService.save(chamado.getColaborador(),
+        chamadoService.save(chamado.getUsuario(),
                 chamado.getTitulo(),
                 chamado.getDescricao(),
                 chamado.getStatus(),
@@ -66,7 +66,7 @@ public class ChamadoController {
     public void alterarChamado(@RequestBody Chamado chamado, @PathVariable Long id){
         chamadoService.save1(
                 chamado.getChamadoId(),
-                chamado.getColaborador(),
+                chamado.getUsuario(),
                 chamado.getTitulo(),
                 chamado.getDescricao(),
                 chamado.getStatus(),

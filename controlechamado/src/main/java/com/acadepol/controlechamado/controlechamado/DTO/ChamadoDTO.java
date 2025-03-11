@@ -8,7 +8,7 @@ import java.util.Date;
 @Setter
 public class ChamadoDTO {
 
-    private Long colaboradorId;
+    private Long usuarioId;
     private Long tecnicoId;
     private String titulo;
     private String descricao;

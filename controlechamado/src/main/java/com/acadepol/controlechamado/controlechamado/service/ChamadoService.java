@@ -1,11 +1,10 @@
 package com.acadepol.controlechamado.controlechamado.service;
 
-import com.acadepol.controlechamado.controlechamado.entity.Chamado;
-import com.acadepol.controlechamado.controlechamado.entity.Usuario;
+import com.acadepol.controlechamado.controlechamado.domain.chamado.Chamado;
+import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
