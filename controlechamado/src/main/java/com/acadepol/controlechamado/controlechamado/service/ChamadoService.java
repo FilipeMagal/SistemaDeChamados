@@ -2,6 +2,7 @@ package com.acadepol.controlechamado.controlechamado.service;
 
 import com.acadepol.controlechamado.controlechamado.domain.chamado.Chamado;
 import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
+import com.acadepol.controlechamado.controlechamado.enums.Setor;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,14 @@ public interface ChamadoService {
     List<Chamado> findAllChamados();
 
     Chamado findById(Long id);
+    Chamado findByUsuarioCpf(String id);
 
-    void save(Usuario colaborador, String titulo, String descricao, Status status, Date dataCriacao); // Salvar
-    void save1(Long chamadoId, Usuario colaborador, String titulo, String descricao, Status status, Date dataConclusao); // Editar
+    Usuario findByMatricula(Long matricula);
+
+    Chamado save1(Long chamadoId, Usuario colaborador, Setor setor, String descricao, Status status, Date dataConclusao); // Editar
+
+    void save(Long chamadoId, Setor setor, String descricao, Status status, Date dataCriacao);
+
     void delete(Long id);
 
 }

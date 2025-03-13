@@ -3,10 +3,13 @@ package com.acadepol.controlechamado.controlechamado.service.impl;
 
 import com.acadepol.controlechamado.controlechamado.domain.chamado.Chamado;
 import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
+import com.acadepol.controlechamado.controlechamado.enums.Setor;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
 import com.acadepol.controlechamado.controlechamado.repository.ChamadoRepository;
+import com.acadepol.controlechamado.controlechamado.repository.UsuarioRepository;
 import com.acadepol.controlechamado.controlechamado.service.ChamadoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
@@ -23,28 +26,50 @@ public class ChamadoServiceImpl implements ChamadoService {
     @Autowired
     ChamadoRepository chamadoRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public List <Chamado> findAllChamados(){
         return chamadoRepository.findAll();
     }
+
     public Chamado findById(Long id){
         Optional <Chamado> ch = chamadoRepository.findById(id);
         return ch.get();
     }
 
+    @Override
+    public Chamado findByUsuarioCpf(String id) {
+        Optional <Chamado> chamado = chamadoRepository.findByUsuarioCpf(id);
+        return chamado.get();
+    }
+
+    // Metodo findByMatricula para buscar usuário pela matrícula
+    @Override
+    public Usuario findByMatricula(Long matricula) {
+        // Aqui estamos buscando o UserDetails, e em seguida, fazemos o cast para Usuario
+        UserDetails userDetails = usuarioRepository.findByMatricula(matricula);
+
+        // Verificamos se o resultado encontrado é do tipo Usuario
+        if (userDetails instanceof Usuario) {
+            return (Usuario) userDetails; // Fazendo o cast para Usuario
+        } else {
+            throw new RuntimeException("Usuário não encontrado com matrícula: " + matricula);
+        }
+    }
+
+
+
     //Metodo POST (Registrar dados)
 
     @Override
-    public void save(Usuario usuario, String titulo, String descricao, Status status, Date dataCriacao) {
+    public void save(Long chamadoId, Setor setor, String descricao, Status status, Date dataCriacao) {
         Chamado chamado = new Chamado();
-
-        chamado.setUsuario(usuario);
-        chamado.setTitulo(titulo);
-        chamado.setDescricao(descricao);
+        chamado.setChamadoId(chamadoId);
+        chamado.setSetor(setor);
+        chamado.setDescricaoServidor(descricao);
         chamado.setStatus(status);
         java.sql.Date sqlDate = new java.sql.Date(dataCriacao.getTime());
-
-
-
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(chamado.getDataCriacao());
@@ -53,7 +78,9 @@ public class ChamadoServiceImpl implements ChamadoService {
     }
 
 
-    public void save1(Long chamadoId,Usuario usuario, String titulo, String descricao, Status status, Date dataConclusao) {
+    //Metodo PUT (Alterar dados)
+
+    public Chamado save1(Long chamadoId, Usuario usuario, Setor setor, String descricao, Status status, Date dataConclusao) {
         Chamado chamado;
 
         if (chamadoId != null){
@@ -63,9 +90,10 @@ public class ChamadoServiceImpl implements ChamadoService {
         }
 
         chamado.setUsuario(usuario);
-        chamado.setTitulo(titulo);
-        chamado.setDescricao(descricao);
+        chamado.setSetor(setor);
+        chamado.setDescricaoServidor(descricao);
         chamado.setStatus(status);
+        chamado.setDataConclusao(dataConclusao);
 
 
         // Define o fuso horário de Brasília
@@ -78,7 +106,7 @@ public class ChamadoServiceImpl implements ChamadoService {
 
         chamado.setDataConclusao((java.sql.Date) dataConclusao);
 
-        chamadoRepository.save(chamado);
+        return chamadoRepository.save(chamado);
     }
 
     public void delete (Long id){

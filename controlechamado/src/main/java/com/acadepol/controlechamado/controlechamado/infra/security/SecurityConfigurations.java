@@ -1,5 +1,6 @@
 package com.acadepol.controlechamado.controlechamado.infra.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,20 +12,28 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
+
+    @Autowired
+    SecurityFilter securityFilter;
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())  // Garantir que o CSRF está desabilitado
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Definindo sessão sem estado
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/chamados").hasAnyRole("ADMIN", "TECN")
-                        .requestMatchers(HttpMethod.GET, "/{id}").hasAnyRole("ADMIN", "TECN")
-                        .requestMatchers(HttpMethod.PUT, "/registro/{id}").hasAnyRole("ADMIN", "TECN")
-                        .requestMatchers(HttpMethod.DELETE, "/deletar/{id}").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.POST, "/acadepol/auth/login").permitAll()  // Login permitido sem autenticação
+                        .requestMatchers(HttpMethod.POST, "/acadepol/auth/cadastro").hasAnyRole("ADMIN", "ADMINISTRADOR")  // Cadastro sem autenticação
+                        .requestMatchers(HttpMethod.GET, "/acadepol/chamado/chamados").hasAnyRole("ADMIN","ADMINISTRADOR", "TECN", "TECNICO") // Protegido
+                        .requestMatchers(HttpMethod.PUT, "/acadepol/chamado/registro/{id}").hasAnyRole("ADMIN","ADMINISTRADOR", "TECN", "TECNICO") // Protegido
+                        .requestMatchers(HttpMethod.DELETE, "/acadepol/chamado/deletar/{id}").hasAnyRole("ADMIN", "ADMINISTRADOR") // Protegido
+                        .anyRequest().authenticated())// Qualquer outra requisição precisa de autenticação
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -32,7 +41,7 @@ public class SecurityConfigurations {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
+    @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }

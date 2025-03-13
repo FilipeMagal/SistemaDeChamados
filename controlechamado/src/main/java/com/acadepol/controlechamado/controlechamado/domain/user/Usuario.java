@@ -20,8 +20,8 @@ import java.util.List;
 public class Usuario implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long usuarioId;
+    @Column(name = "id_matricula")
+    private Long matricula;
 
     private String nome;
 
@@ -37,14 +37,26 @@ public class Usuario implements UserDetails {
     @Column(name = "data_criacao")
     private Date dataCriacao;
 
+    public Usuario(Long matricula, String senha, TipoUsuario tipoUsuario){
+        this.cpf = cpf;
+        this.senha = senha;
+        this.tipoUsuario = tipoUsuario;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.tipoUsuario == TipoUsuario.TECNICO) {
-            return List.of(new SimpleGrantedAuthority("ROLE_TECN"), new SimpleGrantedAuthority("ROLE_SERV"));
-        } else if (this.tipoUsuario == TipoUsuario.SERVIDOR) {
-            return List.of(new SimpleGrantedAuthority("ROLE_SERV"));
+        if (this.tipoUsuario == TipoUsuario.TECNICO && this.tipoUsuario == TipoUsuario.TECN) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_TECN"),
+                    new SimpleGrantedAuthority("ROLE_SERV"));
+        } else if (this.tipoUsuario == TipoUsuario.SERVIDOR && this.tipoUsuario == TipoUsuario.SERV) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_SERV"));
         } else {
-            return List.of(new SimpleGrantedAuthority("ROLE_SERVE"), new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_TECN"));
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_SERV"),
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_TECN"));
         }
     }
 

@@ -12,8 +12,11 @@ public class AutorizationServiceImpl implements UserDetailsService {
 
     @Autowired
     UsuarioRepository usuarioRepository;
+
     @Override
-    public UserDetails loadUserByUsername(String cpf) throws UsernameNotFoundException {
-        return usuarioRepository.findByCpf(cpf);
+    public UserDetails loadUserByUsername(String matricula) throws UsernameNotFoundException {
+        return usuarioRepository.findByMatricula(Long.valueOf(matricula));
     }
+
+
 }

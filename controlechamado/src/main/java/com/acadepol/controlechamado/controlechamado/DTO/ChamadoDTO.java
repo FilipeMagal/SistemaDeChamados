@@ -1,5 +1,6 @@
 package com.acadepol.controlechamado.controlechamado.DTO;
 
+import com.acadepol.controlechamado.controlechamado.enums.Setor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ public class ChamadoDTO {
 
     private Long usuarioId;
     private Long tecnicoId;
-    private String titulo;
+    private Setor setor;
     private String descricao;
     private String status;  // Este é o código do Status, como "A", "E", "C"
     private Date dataCriacao;

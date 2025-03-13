@@ -14,7 +14,8 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
-@Value("${api.security.token.secret}")
+
+    @Value("${api.security.token.secret}")
     private String secret;
 
     public String generateToken(Usuario user){
@@ -24,15 +25,15 @@ public class TokenService {
             // Gerando o token JWT
             String token = JWT.create()
                     .withIssuer("ControleChamado")  // Emissor do token
-                    .withSubject(user.getEmail())  // Sujeito (o email do usuário)
-                    .withExpiresAt(this.generateExpirationDate())  // Expiração do token (1 hora)
-                    .withClaim("id", user.getUsuarioId())  // Claim personalizada: ID do usuário
+                    .withSubject(String.valueOf(user.getMatricula()))  // Sujeito (a matricula do usuário)
+                    .withExpiresAt(this.generateExpirationDate())  // Expiração do token (2 hora)
+                    .withClaim("id", user.getMatricula())  // Claim personalizada: ID do usuário
                     .withClaim("role", (user.getTipoUsuario()).toString())  // Claim personalizada: Tipo de usuário
                     .sign(algorithm);  // Assinando o token com o algoritmo e a chave secreta
 
             return token;  // Retorna o token gerado
         }catch (JWTCreationException exception){
-            throw new RuntimeException("Error while authenticating");
+            throw new RuntimeException("Error while authenticating", exception);
         }
     }
 

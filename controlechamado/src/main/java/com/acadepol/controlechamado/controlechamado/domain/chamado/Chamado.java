@@ -1,6 +1,7 @@
 package com.acadepol.controlechamado.controlechamado.domain.chamado;
 
 import com.acadepol.controlechamado.controlechamado.domain.user.Usuario;
+import com.acadepol.controlechamado.controlechamado.enums.Setor;
 import com.acadepol.controlechamado.controlechamado.enums.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,15 +21,18 @@ public class Chamado {
 
     // Relacionamento com o usuário que criou o chamado (usuário solicitante)
     @ManyToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "usuarioId")
+    @JoinColumn(name = "id_matricula", referencedColumnName = "id_matricula")
     private Usuario usuario;
 
-    private String titulo;
+    @Enumerated(EnumType.STRING)
+    private Setor setor;
 
-    private String descricao;
+    private String descricaoServidor;
+
+    private String descricaoTecnico;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.ABERTO;
 
     @Column(name = "data_criacao")
     private Date dataCriacao;
@@ -38,6 +42,7 @@ public class Chamado {
 
     // Relacionamento com o técnico responsável pelo chamado
     @ManyToOne
-    @JoinColumn(name = "tecnico_id", referencedColumnName = "usuarioId")
+    @JoinColumn(name = "tecnico_id", referencedColumnName = "id_matricula")
     private Usuario tecnico;
+
 }
