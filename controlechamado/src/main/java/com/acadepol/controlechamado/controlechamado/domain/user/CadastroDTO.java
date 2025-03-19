@@ -1,4 +1,6 @@
 package com.acadepol.controlechamado.controlechamado.domain.user;
 
-public record CadastroDTO(Long matricula, String senha, TipoUsuario role) {
+import java.util.Date;
+
+public record CadastroDTO(Long matricula, String nome, String email, String senha, TipoUsuario tipoUsuario, String cpf) {
 }

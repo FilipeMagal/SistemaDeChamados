@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Date;
+
 @RestController
 @RequestMapping("/acadepol/auth")
 public class AuthenticationControler {
@@ -41,7 +43,7 @@ public class AuthenticationControler {
     public ResponseEntity cadastro(@RequestBody @Valid CadastroDTO dados){
         if (this.usuarioRepository.findByMatricula(dados.matricula()) != null) return ResponseEntity.badRequest().build();
         String senhaEncriptada = new BCryptPasswordEncoder().encode(dados.senha());
-        Usuario novoUsuario = new Usuario(dados.matricula(), senhaEncriptada, dados.role());
+        Usuario novoUsuario = new Usuario(dados.matricula(), dados.nome(), dados.email(), senhaEncriptada,dados.tipoUsuario(), dados.cpf());
 
         this.usuarioRepository.save(novoUsuario);
         return ResponseEntity.ok().build();

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -51,20 +52,22 @@ public class ChamadoController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<String> registroChamado(@RequestBody ChamadoDTO chamadoDTO) {
+    public ResponseEntity<String> registroChamado(@RequestBody ChamadoDTO chamadoDTO,
+                                                  @AuthenticationPrincipal Usuario usuarioLogado) {
+
         Usuario usuario = usuarioRepository.findById(chamadoDTO.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
 
-
-
+        // Associa o servidor logado ao chamado
         Chamado chamado = new Chamado();
-        chamado.setUsuario(usuario);
+
+        chamado.setUsuario(usuarioLogado);  // Associando o usuário logado ao chamado
         chamado.setSetor(chamadoDTO.getSetor());
         chamado.setDescricaoServidor(chamadoDTO.getDescricao());
-
         chamado.setStatus(Status.ABERTO);
-        chamado.setDataCriacao(chamadoDTO.getDataCriacao());
+        chamado.setDataCriacao(new Date());  // Definindo a data de criação automaticamente
 
+        // Salvando o chamado
         chamadoService.save(chamado.getChamadoId(), chamado.getSetor(), chamado.getDescricaoServidor(),
                 chamado.getStatus(), chamado.getDataCriacao());
 
@@ -75,8 +78,6 @@ public class ChamadoController {
     public void alterarChamado(@RequestBody Chamado chamado, @PathVariable Long id) {
         chamadoService.save1(
                 chamado.getChamadoId(),
-                chamado.getUsuario(),
-                chamado.getSetor(),
                 chamado.getDescricaoServidor(),
                 chamado.getStatus(),
                 chamado.getDataConclusao());
@@ -89,20 +90,18 @@ public class ChamadoController {
         Chamado chamado = chamadoService.findById(id);
 
         // Verifique se o usuário autenticado é um técnico
-        if (!usuario.getTipoUsuario().equals(TipoUsuario.TECNICO) && !usuario.getTipoUsuario().equals(TipoUsuario.TECN)) {
+        if (!usuario.getTipoUsuario().equals(TipoUsuario.TECNICO) ) {
             return ResponseEntity.status(403).body(null); // Forbidden
-        } else if (!usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR) && !usuario.getTipoUsuario().equals(TipoUsuario.ADMIN)) {
+        } else if (!usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
             return ResponseEntity.status(403).body(null);
         }
 
         chamado.setDescricaoTecnico(descricaoTecnico);
-        chamadoService.save1(
-                chamado.getChamadoId(),
+        chamadoService.saveTec(
                 chamado.getUsuario(),
-                chamado.getSetor(),
-                chamado.getDescricaoServidor(),
+                chamado.getDescricaoTecnico(),
                 chamado.getStatus(),
-                chamado.getDataConclusao());
+                chamado.getDataConclusao() );
 
         return ResponseEntity.ok(chamado);
     }
@@ -114,15 +113,13 @@ public class ChamadoController {
         Chamado chamado = chamadoService.findById(id);
 
         // Verifique se o usuário autenticado é um técnico
-        if (!usuario.getTipoUsuario().equals(TipoUsuario.TECNICO) && !usuario.getTipoUsuario().equals(TipoUsuario.TECN) && !usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR) && !usuario.getTipoUsuario().equals(TipoUsuario.ADMIN)) {
+        if (!usuario.getTipoUsuario().equals(TipoUsuario.TECNICO) && !usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
             return ResponseEntity.status(403).body(null); // Forbidden
         }
 
         // Atualize o status do chamado
         chamadoService.save1(
                 chamado.getChamadoId(),
-                chamado.getUsuario(),
-                chamado.getSetor(),
                 chamado.getDescricaoServidor(),
                 chamado.getStatus(),
                 chamado.getDataConclusao());

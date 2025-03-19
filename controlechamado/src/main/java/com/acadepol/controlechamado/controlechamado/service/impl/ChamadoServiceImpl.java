@@ -29,14 +29,21 @@ public class ChamadoServiceImpl implements ChamadoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    //Listar todos
+
     public List <Chamado> findAllChamados(){
         return chamadoRepository.findAll();
     }
+
+    //Mostrar com o ID
 
     public Chamado findById(Long id){
         Optional <Chamado> ch = chamadoRepository.findById(id);
         return ch.get();
     }
+
+
+    // Mostrar com o CPF
 
     @Override
     public Chamado findByUsuarioCpf(String id) {
@@ -44,7 +51,8 @@ public class ChamadoServiceImpl implements ChamadoService {
         return chamado.get();
     }
 
-    // Metodo findByMatricula para buscar usuário pela matrícula
+    // Mostrar com a matrícula
+
     @Override
     public Usuario findByMatricula(Long matricula) {
         // Aqui estamos buscando o UserDetails, e em seguida, fazemos o cast para Usuario
@@ -59,28 +67,36 @@ public class ChamadoServiceImpl implements ChamadoService {
     }
 
 
-
-    //Metodo POST (Registrar dados)
+    // Salvar o chamado
 
     @Override
     public void save(Long chamadoId, Setor setor, String descricao, Status status, Date dataCriacao) {
         Chamado chamado = new Chamado();
+
         chamado.setChamadoId(chamadoId);
         chamado.setSetor(setor);
         chamado.setDescricaoServidor(descricao);
         chamado.setStatus(status);
-        java.sql.Date sqlDate = new java.sql.Date(dataCriacao.getTime());
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = dateFormat.format(chamado.getDataCriacao());
+        if (dataCriacao == null) {
+            dataCriacao = new Date();  // Data atual
+        }
+        chamado.setDataCriacao(dataCriacao);  // Definindo a data de criação
 
         chamadoRepository.save(chamado);
+    }
+
+    @Override
+    public Chamado saveTec(Usuario usuario, String descricao, Status status, Date dataConclusao) {
+        Chamado chamado;
+
+        chamado
     }
 
 
     //Metodo PUT (Alterar dados)
 
-    public Chamado save1(Long chamadoId, Usuario usuario, Setor setor, String descricao, Status status, Date dataConclusao) {
+    public Chamado save1(Long chamadoId, String descricao, Status status, Date dataConclusao) {
         Chamado chamado;
 
         if (chamadoId != null){
@@ -89,17 +105,12 @@ public class ChamadoServiceImpl implements ChamadoService {
             throw new RuntimeException("Chamado não encontrado com ID: null");
         }
 
-        chamado.setUsuario(usuario);
-        chamado.setSetor(setor);
         chamado.setDescricaoServidor(descricao);
         chamado.setStatus(status);
         chamado.setDataConclusao(dataConclusao);
 
 
-        // Define o fuso horário de Brasília
         ZoneId zonaBrasilia = ZoneId.of("America/Sao_Paulo");
-
-        // Converte a dataConclusao para LocalDate considerando o fuso horário
         LocalDate localDateCompra = dataConclusao.toInstant()
                 .atZone(zonaBrasilia) // Aplica o fuso horário
                 .toLocalDate(); // Mantém a data sem tempo

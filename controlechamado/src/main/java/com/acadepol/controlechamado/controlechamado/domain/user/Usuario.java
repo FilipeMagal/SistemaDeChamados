@@ -34,29 +34,29 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
 
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
-    public Usuario(Long matricula, String senha, TipoUsuario tipoUsuario){
+    public Usuario(Long matricula, String nome, String email, String senha, TipoUsuario tipoUsuario, String cpf) {
+        this.matricula = matricula;
+        this.nome = nome;
         this.cpf = cpf;
+        this.email = email;
         this.senha = senha;
         this.tipoUsuario = tipoUsuario;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.tipoUsuario == TipoUsuario.TECNICO && this.tipoUsuario == TipoUsuario.TECN) {
+        if (this.tipoUsuario == TipoUsuario.TECNICO) {
             return List.of(
-                    new SimpleGrantedAuthority("ROLE_TECN"),
-                    new SimpleGrantedAuthority("ROLE_SERV"));
-        } else if (this.tipoUsuario == TipoUsuario.SERVIDOR && this.tipoUsuario == TipoUsuario.SERV) {
+                    new SimpleGrantedAuthority("ROLE_TECNICO"),
+                    new SimpleGrantedAuthority("ROLE_SERVIDOR"));
+        } else if (this.tipoUsuario == TipoUsuario.SERVIDOR) {
             return List.of(
-                    new SimpleGrantedAuthority("ROLE_SERV"));
+                    new SimpleGrantedAuthority("ROLE_SERVIDOR"));
         } else {
             return List.of(
-                    new SimpleGrantedAuthority("ROLE_SERV"),
-                    new SimpleGrantedAuthority("ROLE_ADMIN"),
-                    new SimpleGrantedAuthority("ROLE_TECN"));
+                    new SimpleGrantedAuthority("ROLE_SERVIDOR"),
+                    new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"),
+                    new SimpleGrantedAuthority("ROLE_TECNICO"));
         }
     }
 

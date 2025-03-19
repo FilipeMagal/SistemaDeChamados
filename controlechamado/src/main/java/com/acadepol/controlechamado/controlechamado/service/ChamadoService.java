@@ -19,9 +19,12 @@ public interface ChamadoService {
 
     Usuario findByMatricula(Long matricula);
 
-    Chamado save1(Long chamadoId, Usuario colaborador, Setor setor, String descricao, Status status, Date dataConclusao); // Editar
+    Chamado save1(Long chamadoId, String descricao, Status status, Date dataConclusao); // Editar
 
     void save(Long chamadoId, Setor setor, String descricao, Status status, Date dataCriacao);
+
+    Chamado saveTec(Usuario usuario, String descricao, Status status, Date dataConclusao); // Editar
+
 
     void delete(Long id);
 

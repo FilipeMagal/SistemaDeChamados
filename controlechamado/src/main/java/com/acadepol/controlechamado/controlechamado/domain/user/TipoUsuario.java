@@ -4,9 +4,7 @@ public enum TipoUsuario {
     SERVIDOR,
     TECNICO,
     ADMINISTRADOR,
-    SERV,
-    TECN,
-    ADMIN;
+
 }
 
 

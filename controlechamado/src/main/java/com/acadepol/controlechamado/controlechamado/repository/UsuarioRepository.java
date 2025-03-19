@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository <Usuario, Long> {
     UserDetails findByMatricula(Long matricula);
-
+    boolean existsById(Long matricula); // Adicionando um metodo para verificar se o usuário já existe
 }

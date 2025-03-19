@@ -28,10 +28,10 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Definindo sessão sem estado
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/acadepol/auth/login").permitAll()  // Login permitido sem autenticação
-                        .requestMatchers(HttpMethod.POST, "/acadepol/auth/cadastro").hasAnyRole("ADMIN", "ADMINISTRADOR")  // Cadastro sem autenticação
-                        .requestMatchers(HttpMethod.GET, "/acadepol/chamado/chamados").hasAnyRole("ADMIN","ADMINISTRADOR", "TECN", "TECNICO") // Protegido
-                        .requestMatchers(HttpMethod.PUT, "/acadepol/chamado/registro/{id}").hasAnyRole("ADMIN","ADMINISTRADOR", "TECN", "TECNICO") // Protegido
-                        .requestMatchers(HttpMethod.DELETE, "/acadepol/chamado/deletar/{id}").hasAnyRole("ADMIN", "ADMINISTRADOR") // Protegido
+                        .requestMatchers(HttpMethod.POST, "/acadepol/auth/cadastro").hasAnyRole( "ADMINISTRADOR") // Cadastro com autenticação
+                        .requestMatchers(HttpMethod.GET, "/acadepol/chamado/chamados").hasAnyRole("ADMINISTRADOR", "TECNICO") // Protegido
+                        .requestMatchers(HttpMethod.PUT, "/acadepol/chamado/registro/{id}").hasAnyRole("ADMINISTRADOR", "TECNICO") // Protegido
+                        .requestMatchers(HttpMethod.DELETE, "/acadepol/chamado/deletar/{id}").hasAnyRole( "ADMINISTRADOR") // Protegido
                         .anyRequest().authenticated())// Qualquer outra requisição precisa de autenticação
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
