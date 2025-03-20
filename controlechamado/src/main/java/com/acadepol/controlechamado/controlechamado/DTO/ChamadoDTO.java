@@ -15,5 +15,6 @@ public class ChamadoDTO {
     private String descricao;
     private String status;  // Este é o código do Status, como "A", "E", "C"
     private Date dataCriacao;
+    private String descricaoTecnico;
 
 }

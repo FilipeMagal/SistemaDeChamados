@@ -67,6 +67,8 @@ public class ChamadoServiceImpl implements ChamadoService {
     }
 
 
+
+
     // Salvar o chamado
 
     @Override
@@ -88,15 +90,27 @@ public class ChamadoServiceImpl implements ChamadoService {
 
     @Override
     public Chamado saveTec(Usuario usuario, String descricao, Status status, Date dataConclusao) {
-        Chamado chamado;
+        Chamado chamado = new Chamado();
 
-        chamado
+        chamado.setUsuario(usuario);
+        chamado.setDescricaoTecnico(descricao);
+        chamado.setStatus(status);
+        chamado.setDataConclusao(dataConclusao);
+        return chamadoRepository.save(chamado);
     }
+
+    @Override
+    public Chamado saveAdmin(Usuario usuarioLogado, String descricaoServidor, Setor setor, String descricaoTecnico, Status status, Date dataConclusao) {
+        return null;
+    }
+
+
+
 
 
     //Metodo PUT (Alterar dados)
 
-    public Chamado save1(Long chamadoId, String descricao, Status status, Date dataConclusao) {
+    public Chamado saveServ(Long chamadoId, String setor, String descricao) {
         Chamado chamado;
 
         if (chamadoId != null){
@@ -106,17 +120,7 @@ public class ChamadoServiceImpl implements ChamadoService {
         }
 
         chamado.setDescricaoServidor(descricao);
-        chamado.setStatus(status);
-        chamado.setDataConclusao(dataConclusao);
-
-
-        ZoneId zonaBrasilia = ZoneId.of("America/Sao_Paulo");
-        LocalDate localDateCompra = dataConclusao.toInstant()
-                .atZone(zonaBrasilia) // Aplica o fuso horário
-                .toLocalDate(); // Mantém a data sem tempo
-
-        chamado.setDataConclusao((java.sql.Date) dataConclusao);
-
+        chamado.setSetor(Setor.valueOf(setor));
         return chamadoRepository.save(chamado);
     }
 

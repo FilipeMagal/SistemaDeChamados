@@ -51,81 +51,96 @@ public class ChamadoController {
         return ResponseEntity.ok(usuario);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
     @PostMapping("/registro")
     public ResponseEntity<String> registroChamado(@RequestBody ChamadoDTO chamadoDTO,
                                                   @AuthenticationPrincipal Usuario usuarioLogado) {
 
         Usuario usuario = usuarioRepository.findById(chamadoDTO.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Servidor não encontrado"));
 
-        // Associa o servidor logado ao chamado
         Chamado chamado = new Chamado();
+        // Verifica se o usuário autenticado é um admin ou servidor
+         if (usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
 
-        chamado.setUsuario(usuarioLogado);  // Associando o usuário logado ao chamado
-        chamado.setSetor(chamadoDTO.getSetor());
-        chamado.setDescricaoServidor(chamadoDTO.getDescricao());
-        chamado.setStatus(Status.ABERTO);
-        chamado.setDataCriacao(new Date());  // Definindo a data de criação automaticamente
+             chamado.setUsuario(usuarioLogado);  // Associando o usuário logado ao chamado
+             chamado.setSetor(chamadoDTO.getSetor());
+             chamado.setDescricaoServidor(chamadoDTO.getDescricao());
+             chamado.setStatus(Status.ABERTO);
+             chamado.setDataCriacao(new Date());  // Definindo a data de criação automaticamente
+             chamado.setDescricaoTecnico(chamadoDTO.getDescricaoTecnico());
 
-        // Salvando o chamado
-        chamadoService.save(chamado.getChamadoId(), chamado.getSetor(), chamado.getDescricaoServidor(),
-                chamado.getStatus(), chamado.getDataCriacao());
+             chamadoService.save(chamado.getChamadoId(), chamado.getSetor(), chamado.getDescricaoServidor(),
+                     chamado.getStatus(), chamado.getDataCriacao());
 
-        return ResponseEntity.ok("Chamado registrado com sucesso!");
+             return ResponseEntity.ok("Chamado registrado com sucesso!");
+        } else if (usuario.getTipoUsuario().equals(TipoUsuario.SERVIDOR)) {
+
+             chamado.setUsuario(usuarioLogado);  // Associando o usuário logado ao chamado
+             chamado.setSetor(chamadoDTO.getSetor());
+             chamado.setDescricaoServidor(chamadoDTO.getDescricao());
+             chamado.setStatus(Status.ABERTO);
+             chamado.setDataCriacao(new Date());  // Definindo a data de criação automaticamente
+
+             chamadoService.save(chamado.getChamadoId(), chamado.getSetor(), chamado.getDescricaoServidor(),
+                     chamado.getStatus(), chamado.getDataCriacao());
+
+             return ResponseEntity.ok("Chamado registrado com sucesso!");
+         }
+             return ResponseEntity.badRequest().body("Usuário não autorizado para registrar chamado.");
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @PutMapping("/registro/{id}")
-    public void alterarChamado(@RequestBody Chamado chamado, @PathVariable Long id) {
-        chamadoService.save1(
-                chamado.getChamadoId(),
-                chamado.getDescricaoServidor(),
-                chamado.getStatus(),
-                chamado.getDataConclusao());
-    }
+    public void alterarChamado(@RequestBody Chamado chamado, @PathVariable Long id, @AuthenticationPrincipal Usuario usuarioLogado) {
 
-    @PutMapping("/descricao-tecnico/{id}")
-    public ResponseEntity<Chamado> editarDescricaoTecnico(@PathVariable Long id,
-                                                          @RequestBody String descricaoTecnico,
-                                                          @AuthenticationPrincipal Usuario usuario) {
-        Chamado chamado = chamadoService.findById(id);
-
-        // Verifique se o usuário autenticado é um técnico
-        if (!usuario.getTipoUsuario().equals(TipoUsuario.TECNICO) ) {
-            return ResponseEntity.status(403).body(null); // Forbidden
-        } else if (!usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
-            return ResponseEntity.status(403).body(null);
+        // Verificando o tipo de usuário (técnico,administrador ou servidor)
+        if (usuarioLogado.getTipoUsuario().equals(TipoUsuario.TECNICO)) {
+            chamadoService.saveTec(
+                    usuarioLogado,
+                    chamado.getDescricaoTecnico(),
+                    chamado.getStatus(),
+                    chamado.getDataConclusao());
+        } else if (usuarioLogado.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
+            chamadoService.saveAdmin(
+                    usuarioLogado,
+                    chamado.getDescricaoServidor(),
+                    chamado.getSetor(),
+                    chamado.getDescricaoTecnico(),
+                    chamado.getStatus(),
+                    chamado.getDataConclusao());
         }
-
-        chamado.setDescricaoTecnico(descricaoTecnico);
-        chamadoService.saveTec(
-                chamado.getUsuario(),
-                chamado.getDescricaoTecnico(),
-                chamado.getStatus(),
-                chamado.getDataConclusao() );
-
-        return ResponseEntity.ok(chamado);
-    }
-
-    @PutMapping("/status/{id}")
-    public ResponseEntity<Chamado> atualizarStatus(@PathVariable Long id,
-                                                   @RequestBody String status,
-                                                   @AuthenticationPrincipal Usuario usuario) {
-        Chamado chamado = chamadoService.findById(id);
-
-        // Verifique se o usuário autenticado é um técnico
-        if (!usuario.getTipoUsuario().equals(TipoUsuario.TECNICO) && !usuario.getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
-            return ResponseEntity.status(403).body(null); // Forbidden
-        }
-
-        // Atualize o status do chamado
-        chamadoService.save1(
+        chamadoService.saveServ(
                 chamado.getChamadoId(),
-                chamado.getDescricaoServidor(),
-                chamado.getStatus(),
-                chamado.getDataConclusao());
-
-        return ResponseEntity.ok(chamado);
+                String.valueOf(chamado.getSetor()),
+                chamado.getDescricaoServidor());
     }
+
+
+
 
 
     @DeleteMapping("/deletar/{id}")

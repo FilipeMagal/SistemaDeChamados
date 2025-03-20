@@ -19,13 +19,14 @@ public interface ChamadoService {
 
     Usuario findByMatricula(Long matricula);
 
-    Chamado save1(Long chamadoId, String descricao, Status status, Date dataConclusao); // Editar
+    Chamado saveServ(Long chamadoId, String setor, String descricao); // Editar
 
     void save(Long chamadoId, Setor setor, String descricao, Status status, Date dataCriacao);
 
-    Chamado saveTec(Usuario usuario, String descricao, Status status, Date dataConclusao); // Editar
+    Chamado saveTec(Usuario usuarioLogado, String descricao, Status status, Date dataConclusao); // Editar
 
+
+    Chamado saveAdmin(Usuario usuarioLogado, String descricaoServidor, Setor setor, String descricaoTecnico, Status status, Date dataConclusao);
 
     void delete(Long id);
-
 }
